@@ -1,0 +1,779 @@
+package com.mycompany.airvoyage;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Scanner;
+import javax.swing.*;
+import java.awt.event.ActionListener;
+
+// Interface for displaying details
+interface Displayable {
+    void displayDetails();
+}
+
+// Person class (Parent)
+abstract class Person implements Displayable {
+    private String name;
+    private String email;
+    private String phoneNumber;
+
+    // Constructor
+    public Person(String name, String email, String phoneNumber) {
+        if (!isValidEmail(email)) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
+        if (!isValidPhoneNumber(phoneNumber)) {
+            throw new IllegalArgumentException("Invalid phone number format.");
+        }
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email.matches(emailRegex);
+    }
+
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        String phoneRegex = "\\d+";
+        return phoneNumber.matches(phoneRegex);
+    }
+
+    @Override
+    public void displayDetails() {
+        System.out.println("Name: " + name);
+        System.out.println("Email: " + email);
+        System.out.println("Phone Number: " + phoneNumber);
+    }
+}
+
+// Passenger class (derived from Person class)
+// Passenger class represents a passenger with their details
+class Passenger extends Person {
+    // Constructor
+    public Passenger(String name, String email, String phoneNumber) {
+        super(name, email, phoneNumber);
+    }
+
+    @Override
+    public void displayDetails() {
+        super.displayDetails();
+    }
+}
+
+// Admin class (derived from Person class)
+// Admin class represents an admin with basic details
+class Admin extends Person {
+    private String username;
+    private String password;
+
+    // Constructor
+    public Admin(String name, String email, String phoneNumber, String username, String password) {
+        super(name, email, phoneNumber);
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public boolean authenticate(String password) {
+        return this.password.equals(password);
+    }
+
+    @Override
+    public void displayDetails() {
+        System.out.println("Admin Details:");
+        super.displayDetails();
+        System.out.println("Username: " + username);
+    }
+}
+
+// AdminManager class manages the admins
+class AdminManager{
+    Scanner input = new Scanner(System.in);
+    private List<Admin> admins;
+
+    // Constructor
+    public AdminManager() {
+        admins = new ArrayList<>();
+        
+        // Initializing admins list with sample admins
+        admins.add(new Admin("Admin 1", "admin1@gmail.com", "123456", "admin1", "password1"));
+        admins.add(new Admin("Admin 2", "admin2@gmail.com", "789456", "admin2", "password2"));
+        admins.add(new Admin("Admin 3", "admin3@gmail.com", "012456", "admin3", "password3"));
+    }
+    
+    // method to get all admins
+    public List<Admin> getAdmins() {
+        return admins;
+    }
+    
+}
+
+// Flight class
+class Flight implements Displayable {
+    private String airline;
+    private String flightNumber;
+    private String departureTime;
+    private String date; 
+    private int totalSeats;
+    private int availableSeats;
+
+    // Constructor
+    public Flight(String airline, String flightNumber, String departureTime, String date, int totalSeats) {
+        this.airline = airline;
+        this.flightNumber = flightNumber;
+        this.departureTime = departureTime;
+        this.date = date;
+        this.totalSeats = totalSeats;
+        this.availableSeats = totalSeats;
+    }
+    
+    // Getters
+    public String getAirline() {
+        return airline;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public String getDepartureTime() {
+        return departureTime;
+    }
+
+    public String getDate() { 
+        return date;
+    }
+
+    public int getTotalSeats() {
+        return totalSeats;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+    
+    // Setters
+    public void setAirline(String airline) { 
+        this.airline = airline; 
+    }
+    
+    public void setDepartureTime(String departureTime) { 
+        this.departureTime = departureTime; 
+    }
+    
+    public void setDate(String date) { 
+        this.date = date; 
+    }
+    
+    public void setTotalSeats(int totalSeats) { 
+        this.totalSeats = totalSeats; 
+    }
+
+    public void bookSeats(int numSeats) throws Exception {
+        if (numSeats <= availableSeats) {
+            availableSeats -= numSeats;
+            System.out.println(numSeats + " seat(s) booked successfully on " + airline + " flight " + flightNumber);
+        } else {
+            throw new Exception("Not enough seats available on " + airline + " flight " + flightNumber);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Airline: " + airline + ", Flight Number: " + flightNumber + ", Departure Time: " + departureTime + ", Date: " + date + ", Total Seats: " + totalSeats + ", Available Seats: " + availableSeats;
+    }
+
+    @Override
+    public void displayDetails() {
+        System.out.println("Airline: " + airline);
+        System.out.println("Flight Number: " + flightNumber);
+        System.out.println("Departure Time: " + departureTime);
+        System.out.println("Date: " + date); 
+        System.out.println("Total Seats: " + totalSeats);
+        System.out.println("Available Seats: " + availableSeats + "\n");
+        
+    }
+}
+
+// FlightManager class manages the flights and provides methods to add, edit, and delete flights
+class FlightManager{
+    Scanner input = new Scanner(System.in);
+    private List<Flight> flights;
+    
+    // Constructor
+    public FlightManager() {
+            flights = new ArrayList<>();
+            
+            // Initializing flights list with sample flights
+            flights.add(new Flight("Airline1", "FL001", "09:00", "20-05-2024", 50));
+            flights.add(new Flight("Airline2", "FL002", "11:00", "21-05-2024", 40));
+            flights.add(new Flight("Airline3", "FL003", "13:00", "22-05-2024", 60));
+            
+    }
+    
+    //method to add a new flight
+    public void addFlight(Flight newFlight) {
+        flights.add(newFlight);
+        System.out.println("Flight added successfully.");
+    }
+    
+    // method to edit a flight
+    public void editFlight(String givenFlightNumber) {
+        for(Flight flight : flights) {
+            if (flight.getFlightNumber().equals(givenFlightNumber)){
+                System.out.println("Enter the new");
+                System.out.print("Airline: ");
+                String newAirline = input.nextLine();
+                System.out.print("Date: ");
+                String newDate = input.nextLine();
+                System.out.print("Departure Time: ");
+                String newDepartureTime = input.nextLine();
+                System.out.print("Total Seats: ");
+                int newTotalSeats = input.nextInt();
+                input.nextLine(); //clear the buffer
+                
+                Flight editedFlight = new Flight (newAirline, givenFlightNumber, newDepartureTime, newDate, newTotalSeats);
+                flights.set(flights.indexOf(flight), editedFlight);
+                
+                System.out.println("Flight " + givenFlightNumber + " has been updated succesfully.");
+                return;
+            }
+        }
+        System.out.println("Flight not found with flight number " + givenFlightNumber);
+    }
+    
+    // method to delete a flight
+    public void deleteFlight(String givenFlightNumber) {
+        for (Flight flight : flights) {
+            if (flight.getFlightNumber().equals(givenFlightNumber)) {
+                flights.remove(flight);
+                System.out.println("Flight deleted successfully.");
+                return;
+            }
+        }
+        System.out.println("Flight not found with flight number " + givenFlightNumber);
+    }
+    
+    //method to search for a flight by a given flight number
+    public Flight searchFlight (String givenFlightNumber) {
+        for (Flight flight : flights) {
+            if (flight.getFlightNumber().equals(givenFlightNumber)) {
+                return flight;
+            }
+        }
+        System.out.println("Flight not found with flight number " + givenFlightNumber);
+        return null;
+    }
+    
+    // method to get all flights
+    public List<Flight> getAllFlights(){
+        return flights;
+    }
+    
+    // method to display all flights
+    public void displayAllFlights() {
+        for(Flight flight : flights) {
+            flight.displayDetails();
+        }
+    }
+    
+}
+
+// Reservation class represents a reservation with its details
+class Reservation implements Displayable {
+    private static int reservationIdCounter = 1;
+    private int reservationId;
+    private Flight flight;
+    private Passenger passenger;
+    private int numSeats;
+
+    // Constructor
+    public Reservation(Flight flight, Passenger passenger, int numSeats) {
+        this.reservationId = reservationIdCounter++;
+        this.flight = flight;
+        this.passenger = passenger;
+        this.numSeats = numSeats;
+    }
+
+    public int getReservationId() {
+        return reservationId;
+    }
+
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public Passenger getPassenger() {
+        return passenger;
+    }
+
+    public int getNumSeats() {
+        return numSeats;
+    }
+    
+    @Override
+    public String toString() {
+        return "Reservation ID: " + reservationId + "\n" +
+               "Flight Details:\n" + flight.toString() + "\n" +
+               "Passenger Details:\n" + passenger.toString() + "\n" +
+               "Number of Seats: " + numSeats;
+    }
+    
+    @Override
+    public void displayDetails() {
+        System.out.println("\nReservation ID: " + reservationId);
+        System.out.println("FLIGHT DETAILS:");
+        flight.displayDetails();
+        System.out.println("PASSENGER DETAILS:");
+        passenger.displayDetails();
+        System.out.println("Number of Seats: " + numSeats);
+    }
+}
+
+// ReservationManager class manages the creation and display of reservations
+class ReservationManager {
+    private List<Reservation> reservations;
+
+    // Constructor
+    public ReservationManager() {
+        reservations = new ArrayList<>();
+    }
+
+    public void makeReservation(Flight flight, Passenger passenger, int numSeats) throws Exception {
+        flight.bookSeats(numSeats);
+        Reservation reservation = new Reservation(flight, passenger, numSeats);
+        reservations.add(reservation);
+        System.out.println("Reservation made successfully with ID: " + reservation.getReservationId());
+    }
+
+    public void viewReservationDetails(int givenReservationId) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getReservationId() == givenReservationId) {
+                reservation.displayDetails();
+                return;
+            }
+        }
+        System.out.println("Reservation not found with ID: " + givenReservationId);
+    }
+
+    public void viewAllReservations() { 
+        if (reservations.isEmpty()) {
+            System.out.println("No reservations found.");
+        } else {
+            System.out.println("\nALL RESERVATIONS:");
+            for (Reservation reservation : reservations) {
+                reservation.displayDetails();
+                System.out.println("-----------");
+            }
+        }
+    }
+    
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+}
+
+class AirReservationSystemGUI {
+    private JFrame mainFrame;
+    private FlightManager fm;
+    private AdminManager am;
+    private ReservationManager rm;
+
+    public AirVoyageGUI () {
+        fm = new FlightManager();
+        am = new AdminManager();
+        rm = new ReservationManager();
+        createMainGUI();
+    }
+
+    private void createMainGUI() {
+        mainFrame = new JFrame("AirVoyage - Flight Reservation System");
+        mainFrame.setSize(400, 300);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        JLabel welcomeLabel = new JLabel("Welcome to AirVoyage!");
+        welcomeLabel.setBounds(130, 20, 200, 25);
+        panel.add(welcomeLabel);
+
+        createButton(panel, "Passenger", 50, 80, e -> openPassengerGUI());
+        createButton(panel, "Admin", 200, 80, e -> openAdminGUI());
+        createButton(panel, "Exit", 130, 140, e -> mainFrame.dispose());
+
+        mainFrame.add(panel);
+        mainFrame.setVisible(true);
+    }
+
+    private void createButton(JPanel panel, String text, int x, int y, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.setBounds(x, y, 130, 25);
+        button.addActionListener(actionListener);
+        panel.add(button);
+    }
+
+    private void openPassengerGUI() {
+        JFrame passengerFrame = createFrame("Passenger Menu");
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        JTextField nameText = createLabeledTextField(panel, "Name:", 10, 20);
+        JTextField emailText = createLabeledTextField(panel, "Email:", 10, 50);
+        JTextField phoneText = createLabeledTextField(panel, "Phone:", 10, 80);
+
+        createButton(panel, "View Flights", 10, 110, e -> viewFlights());
+        createButton(panel, "Make Reservation", 10, 140, e -> makeReservation(nameText.getText(), emailText.getText(), phoneText.getText()));
+        createButton(panel, "Exit", 10, 170, e -> passengerFrame.dispose());
+
+        passengerFrame.add(panel);
+        passengerFrame.setVisible(true);
+    }
+
+    private void viewFlights() {
+        JFrame flightsFrame = createFrame("Available Flights");
+        JTextArea flightsArea = new JTextArea();
+        flightsArea.setEditable(false);
+        fm.getAllFlights().forEach(flight -> flightsArea.append(flight + "\n"));
+        flightsFrame.add(new JScrollPane(flightsArea));
+        flightsFrame.setVisible(true);
+    }
+
+    private void makeReservation(String name, String email, String phone) {
+        Passenger passenger = new Passenger(name, email, phone);
+        String flightNumber = JOptionPane.showInputDialog("Enter Flight Number:");
+        Flight flight = fm.searchFlight(flightNumber);
+
+        if (flight != null) {
+            int seats = Integer.parseInt(JOptionPane.showInputDialog("Enter number of seats:"));
+            try {
+                rm.makeReservation(flight, passenger, seats);
+                JOptionPane.showMessageDialog(null, "Reservation successful!");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Flight not found.");
+        }
+    }
+
+    private void openAdminGUI() {
+        JFrame adminFrame = createFrame("Admin Menu");
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        JTextField userText = createLabeledTextField(panel, "Username:", 10, 20);
+        JPasswordField passwordText = new JPasswordField(20);
+        createLabeledComponent(panel, "Password:", passwordText, 10, 50);
+
+        createButton(panel, "Login", 10, 80, e -> adminLogin(userText.getText(), new String(passwordText.getPassword()), adminFrame));
+        createButton(panel, "Exit", 10, 110, e -> adminFrame.dispose());
+
+        adminFrame.add(panel);
+        adminFrame.setVisible(true);
+    }
+
+    private void adminLogin(String username, String password, JFrame adminFrame) {
+        Admin loggedInAdmin = am.getAdmins().stream()
+                .filter(admin -> admin.getUsername().equals(username) && admin.authenticate(password))
+                .findFirst()
+                .orElse(null);
+
+        if (loggedInAdmin != null) {
+            JOptionPane.showMessageDialog(null, "Login successful!");
+            adminFrame.dispose();
+            openAdminOptionsGUI();
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid credentials.");
+        }
+    }
+
+    private void openAdminOptionsGUI() {
+        JFrame adminOptionsFrame = createFrame("Admin Options");
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        createButton(panel, "Add Flight", 10, 20, e -> addFlight());
+        createButton(panel, "Edit Flight", 10, 50, e -> editFlight());
+        createButton(panel, "View Reservations", 10, 80, e -> viewReservations());
+        createButton(panel, "Exit", 10, 110, e -> adminOptionsFrame.dispose());
+
+        adminOptionsFrame.add(panel);
+        adminOptionsFrame.setVisible(true);
+    }
+
+    private void addFlight() {
+        String airline = JOptionPane.showInputDialog("Enter airline:");
+        String flightNumber = JOptionPane.showInputDialog("Enter flight number:");
+        String departureTime = JOptionPane.showInputDialog("Enter departure time:");
+        String date = JOptionPane.showInputDialog("Enter date (DD-MM-YYYY):");
+        int totalSeats = Integer.parseInt(JOptionPane.showInputDialog("Enter total seats:"));
+
+        Flight flight = new Flight(airline, flightNumber, departureTime, date, totalSeats);
+        fm.addFlight(flight);
+        JOptionPane.showMessageDialog(null, "Flight added successfully!");
+    }
+
+    private void editFlight() {
+        String flightNumber = JOptionPane.showInputDialog("Enter flight number to edit:");
+        Flight flight = fm.searchFlight(flightNumber);
+
+        if (flight != null) {
+            flight.setAirline(JOptionPane.showInputDialog("Enter new airline:", flight.getAirline()));
+            flight.setDepartureTime(JOptionPane.showInputDialog("Enter new departure time:", flight.getDepartureTime()));
+            flight.setDate(JOptionPane.showInputDialog("Enter new date (DD-MM-YYYY):", flight.getDate()));
+            flight.setTotalSeats(Integer.parseInt(JOptionPane.showInputDialog("Enter new total seats:", flight.getTotalSeats())));
+            JOptionPane.showMessageDialog(null, "Flight updated successfully!");
+        } else {
+            JOptionPane.showMessageDialog(null, "Flight not found.");
+        }
+    }
+
+    private void viewReservations() {
+        JFrame reservationsFrame = createFrame("Reservations");
+        JTextArea reservationsArea = new JTextArea();
+        reservationsArea.setEditable(false);
+        rm.getReservations().forEach(reservation -> reservationsArea.append(reservation + "\n"));
+        reservationsFrame.add(new JScrollPane(reservationsArea));
+        reservationsFrame.setVisible(true);
+    }
+
+    private JFrame createFrame(String title) {
+        JFrame frame = new JFrame(title);
+        frame.setSize(400, 300);
+        return frame;
+    }
+
+    private JTextField createLabeledTextField(JPanel panel, String label, int x, int y) {
+        JTextField textField = new JTextField(20);
+        createLabeledComponent(panel, label, textField, x, y);
+        return textField;
+    }
+
+    private void createLabeledComponent(JPanel panel, String label, JComponent component, int x, int y) {
+        JLabel jLabel = new JLabel(label);
+        jLabel.setBounds(x, y, 80, 25);
+        panel.add(jLabel);
+        component.setBounds(x + 90, y, 165, 25);
+        panel.add(component);
+    }
+}
+
+public class AirVoyage {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        new AirVoyageGUI();
+        
+        FlightManager fm = new FlightManager();
+        AdminManager am = new AdminManager();
+        ReservationManager rm = new ReservationManager();
+        
+        boolean exitMainMenu = false;
+        while(!exitMainMenu) {
+            try {
+                System.out.println("\nWelcome to AirVoyage! Are you a:");
+                System.out.println("1. Passenger");
+                System.out.println("2. Admin");
+                System.out.println("3. Exit");
+                System.out.print("Enter your choice: ");
+                int choice = input.nextInt();
+                input.nextLine(); // clear the buffer
+                
+                switch(choice) {
+                    case 1: // 1. Passenger
+                        System.out.println("Enter your personal details: ");
+                        System.out.print("Name: ");
+                        String name = input.nextLine();
+                        System.out.print("Email: ");
+                        String email = input.nextLine();
+                        System.out.print("Phone number: ");
+                        String phoneNumber = input.nextLine();
+                        Passenger passenger = new Passenger(name, email, phoneNumber);
+                        boolean exitPassengerMenu = false;
+                        
+                        while(!exitPassengerMenu){
+                            try {
+                                System.out.println("\nPASSENGER MENU:");
+                                System.out.println("1. View Available Flights");
+                                System.out.println("2. Make a Reservation");
+                                System.out.println("3. View Reservation Details");
+                                System.out.println("4. Exit");
+                                System.out.print("Enter your choice: ");
+                                int passengerChoice = input.nextInt();
+                                input.nextLine();  // Consume newline
+                                
+                                switch (passengerChoice) {
+                                    case 1: 
+                                        // 1. View Available Flights
+                                        fm.displayAllFlights();
+                                        break;
+                                        
+                                    case 2:
+                                        // 2. Make a Reservation
+                                        System.out.println("\nAVAILABLE FLIGHTS: ");
+                                        fm.displayAllFlights();
+                                        System.out.println("\n Enter reservation details:");
+                                        System.out.print("Flight Number: ");
+                                        String flightNumber = input.nextLine();
+                                        Flight flightToBeBooked = fm.searchFlight(flightNumber);
+                                        if (flightToBeBooked == null)
+                                            break;
+                                        System.out.print("Number of seats: ");
+                                        int numOfSeats = input.nextInt();
+                                        input.nextLine();  // Consume newline
+                                        
+                                        rm.makeReservation(flightToBeBooked, passenger, numOfSeats);
+                                        break;
+                                        
+                                    case 3:
+                                        // 3. View Reservation Details
+                                        System.out.print("Enter the reservation ID: ");
+                                        int reservationId = input.nextInt();
+                                        input.nextLine();  // Consume newline
+                                        rm.viewReservationDetails(reservationId);
+                                        break;
+                                        
+                                    case 4:
+                                        // 4. Exit
+                                        exitPassengerMenu = true;
+                                        break;
+                                        
+                                    default:
+                                        System.out.println("Invalid choice. Please try again.");
+                                }
+                            }
+                            catch (Exception e) {
+                                System.out.println("Error: " + e.getMessage());
+                            }
+                        }
+                    break; // breaking from passenger case
+                    
+                    case 2: // 2. Admin
+                        System.out.print("Enter your username: ");
+                        String username = input.nextLine();
+                        System.out.print("Enter your password: ");
+                        String password = input.nextLine();
+                        
+                        boolean authenticated = false;
+                        Admin loggedInAdmin = null;
+
+                        for (Admin admin : am.getAdmins()) {
+                            if (admin.getUsername().equals(username) && admin.authenticate(password)) {
+                                System.out.println("Admin authenticated successfully.\n");
+                                System.out.println("Welcome " + admin.getName() + ".");
+                                authenticated = true;
+                                loggedInAdmin = admin;
+                                break;
+                            }
+                        }
+                        
+                        if (authenticated) {
+                            boolean exitAdminMenu = false;
+                            while(!exitAdminMenu) {
+                                try{
+                                    System.out.println("\nADMIN MENU:");
+                                    System.out.println("1. Add a Flight");
+                                    System.out.println("2. Edit a Flight");
+                                    System.out.println("3. Delete a Flight");
+                                    System.out.println("4. View Reservations");
+                                    System.out.println("5. Exit");
+                                    
+                                    System.out.print("Enter your choice: ");
+                                    int adminChoice = input.nextInt();
+                                    input.nextLine();  // Consume newline
+                                    
+                                    switch (adminChoice){
+                                        case 1:
+                                            // 1. Add a Flight
+                                            System.out.print("Enter the airline: ");
+                                            String airline = input.nextLine();
+                                            System.out.print("Enter the flight number: ");
+                                            String flightNumber = input.nextLine();
+                                            System.out.print("Enter the departure time: ");
+                                            String departureTime = input.nextLine();
+                                            System.out.print("Enter the date (DD-MM-YYYY): ");
+                                            String date = input.nextLine();
+                                            System.out.print("Enter the total number of seats: ");
+                                            int totalSeats = input.nextInt();
+                                            input.nextLine();  // Consume newline
+                                            
+                                            Flight newFlight = new Flight (airline, flightNumber, departureTime, date, totalSeats);
+                                            fm.addFlight(newFlight);
+                                            break;
+                                            
+                                        case 2:
+                                            // 2. Edit a Flight
+                                            System.out.println("AVAILABLE FLIGHTS: ");
+                                            fm.displayAllFlights();
+                                            System.out.println("Which flight would you like to edit?");
+                                            System.out.print("Enter the flight number: ");
+                                            flightNumber = input.nextLine();
+                                            fm.editFlight(flightNumber);
+                                            break;
+                                            
+                                        case 3:
+                                            // 3. Delete a Flight
+                                            System.out.println("AVAILABLE FLIGHTS: ");
+                                            fm.displayAllFlights();
+                                            System.out.println("Which flight would you like to delete?");
+                                            System.out.print("Enter the flight number: ");
+                                            flightNumber = input.nextLine();
+                                            fm.deleteFlight(flightNumber);
+                                            break;
+                                            
+                                        case 4:
+                                            // 4. View Reservations
+                                            rm.viewAllReservations();
+                                            break;
+                                            
+                                        case 5:
+                                            // 5. Exit
+                                            exitAdminMenu = true;
+                                            break;
+                                            
+                                        default:
+                                            System.out.println("Invalid choice. Please try again.");
+                                    }
+                                }
+                                catch (Exception e) {
+                                    System.out.println("Error: " + e.getMessage());
+                                }
+                            }
+                        }
+                        else {
+                            System.out.println("Authentication failed. Please try again.");
+                        }
+                        break; // breaking from case 2
+                        
+                    case 3: // 3. Exit
+                        System.out.println("Thank you for using AirVoyage. Goodbye!");
+                        exitMainMenu = true;
+                        break;
+                        
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+    }
+    
+}
